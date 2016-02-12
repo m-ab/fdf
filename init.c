@@ -12,7 +12,7 @@
 
 #include "fdf.h"
 
-static void	init_img(t_env *e)
+void		init_img(t_env *e)
 {
 	e->mlx = mlx_init();
 	e->win = mlx_new_window(e->mlx, WIDTH, HEIGHT, "FDF");
@@ -27,8 +27,9 @@ t_env		init_env(int **tab, int xmax, int ymax)
 
 	e.x_offset = 0;
 	e.y_offset = 0;
-	e.x_origin = 5;
-	e.y_origin = 5;
+	// e.scale = ((double)(WIDTH + HEIGHT) / 2.0) /
+	// ((double)(e.xmax + e.ymax) / 2.0);
+	e.zoom = 1;
 	e.tab = tab;
 	e.xmax = xmax;
 	e.ymax = ymax;

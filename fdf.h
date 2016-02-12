@@ -15,7 +15,6 @@
 
 # define WIDTH 1200
 # define HEIGHT 900
-# define SIZE 20
 # include <unistd.h>
 # include <stdlib.h>
 # include <sys/types.h>
@@ -38,10 +37,11 @@ typedef struct		s_env
 	void			*mlx;
 	void			*win;
 	int				**tab;
+	int 			x0;
+	int 			y0;
 	int 			x_offset;
 	int				y_offset;
-	int 			x_origin;
-	int 			y_origin;
+	int 			zoom;
 	int				xmax;
 	int				ymax;
 	t_img			img;
@@ -52,6 +52,7 @@ int					read_file(int fd, char *av);
 void				get_tab(int **tab, int xmax, int ymax);
 t_env				init_env(int **tab, int xmax, int ymax);
 int					key_event(t_env *e, int keycode);
+void				init_img(t_env *e);
 void				draw(t_env *e);
 
 #endif
