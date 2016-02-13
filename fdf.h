@@ -37,10 +37,15 @@ typedef struct		s_env
 	void			*mlx;
 	void			*win;
 	int				**tab;
+	int 			x;
+	int 			y;
 	int 			x0;
 	int 			y0;
+	int 			x1;
+	int 			y1;
 	int 			x_offset;
 	int				y_offset;
+	int 			alt;
 	int 			zoom;
 	int				xmax;
 	int				ymax;
@@ -53,6 +58,8 @@ void				get_tab(int **tab, int xmax, int ymax);
 t_env				init_env(int **tab, int xmax, int ymax);
 int					key_event(t_env *e, int keycode);
 void				init_img(t_env *e);
+int 				display_win(t_env *e);
+void				display_menu(t_env *e);
 void				draw(t_env *e);
 
 #endif

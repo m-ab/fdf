@@ -12,13 +12,21 @@
 
 #include "fdf.h"
 
+void	display_menu(t_env *e)
+{
+	mlx_string_put(e->mlx, e->win, 20, 20, 0xFFFFFF,
+		"Fleches directionnelles pour deplacer l'objet");
+	mlx_string_put(e->mlx, e->win, 20, 34, 0xFFFFFF,
+		"+ et - sur le pave numerique pour augmenter ou diminuer le zoom");
+}
+
 int 	display_win(t_env *e)
 {
 	mlx_put_image_to_window(e->mlx, e->win, e->img.img_ptr, 0, 0);
 	
 	// ICI ON METTRA LE MENU ET LES OPTIONS
 
-	// display_menu(e);
+	display_menu(e);
 	// display_param(e);
 	return (0);
 }
@@ -38,7 +46,7 @@ void	get_tab(int **tab, int xmax, int ymax)
 
 	e = init_env(tab, xmax, ymax);
 	draw(&e);
-	mlx_key_hook(e.win, key_hook, &e);
+	mlx_hook(e.win, 2, 1, key_hook, &e);
 	display_win(&e);
 	mlx_loop(e.mlx);
 }

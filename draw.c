@@ -13,15 +13,15 @@
 #include "mlx.h"
 #include "fdf.h"
 
-static int	draw_pixel(int x, int y, t_env *e)
+static int	draw_pixel_r(t_env *e, int x, int y)
 {
 	int pos;
 
 	pos = (x * e->img.bpp / 8) + (y * e->img.sl);
 	if (x > 0 && y > 0 && x < WIDTH && y < HEIGHT)
 	{
-		if (e->tab[(y - e->y_offset) / e->zoom]
-			[(x - e->x_offset) / e->zoom] != 0)
+		if (e->tab[e->y][e->x] != 0 || (e->tab[e->y][e->x + 1] == 0 && e->tab[e->y][e->x] != 0)
+			|| (e->tab[e->y][e->x] == 0 && e->tab[e->y][e->x + 1] != 0))
 		{
 			e->img.img[pos] = 255;
 			e->img.img[pos + 1] = 255;
@@ -37,41 +37,90 @@ static int	draw_pixel(int x, int y, t_env *e)
 	return (0);
 }
 
-void		draw_line(t_env *e, int x, int y)
+static int	draw_pixel_d(t_env *e, int x, int y)
+{
+	int pos;
+
+	pos = (x * e->img.bpp / 8) + (y * e->img.sl);
+	if (x > 0 && y > 0 && x < WIDTH && y < HEIGHT)
+	{
+		if (e->tab[e->y][e->x] != 0 || (e->tab[e->y][e->x + 1] == 0 && e->tab[e->y][e->x] != 0)
+			|| (e->tab[e->y][e->x] == 0 && e->tab[e->y + 1][e->x] != 0))
+		{
+			e->img.img[pos] = 255;
+			e->img.img[pos + 1] = 255;
+			e->img.img[pos + 2] = 255;
+		}
+		else
+		{
+			e->img.img[pos] = 150;
+			e->img.img[pos + 1] = 90;
+			e->img.img[pos + 2] = 0;
+		}
+	}
+	return (0);
+}
+
+void		draw_line(t_env *e)
 {
 	int dist_x;
 	int dist_y;
 	int cursor;
 	int max;
 
-	dist_x = x - e->x0;
-	dist_y = y - e->y0;
+	e->x0 = (e->x - e->y) * e->zoom;
+	e->y0 = (e->x + e->y) * (e->zoom / 2) - e->tab[e->y][e->x] * e->alt;
+	e->x1 = ((e->x + 1) - e->y) * e->zoom;
+	e->y1 = ((e->x + 1) + e->y) * (e->zoom / 2) - e->tab[e->y][e->x + 1] * e->alt;
+	dist_x = e->x1 - e->x0;
+	dist_y = e->y1 - e->y0;
 	max = abs(dist_x) > abs(dist_y) ? abs(dist_x) : abs(dist_y);
-	cursor = -1;
-	while (++cursor < max)
+	cursor = 0;
+	while (cursor < max)
 	{
-		draw_pixel(e->x_offset + e->x0 + (cursor * dist_x) / max,
-		e->y_offset + e->y0 + (cursor * dist_y) / max, e);
+		draw_pixel_r(e, e->x_offset + e->x0 + (cursor * dist_x) / max,
+		e->y_offset + e->y0 + (cursor * dist_y) / max);
+		cursor++;
+	}
+}
+
+void		draw_col(t_env *e)
+{
+	int dist_x;
+	int dist_y;
+	int cursor;
+	int max;
+
+	e->x0 = (e->x - e->y) * e->zoom;
+	e->y0 = (e->x + e->y) * (e->zoom / 2) - e->tab[e->y][e->x] * e->alt;
+	e->x1 = (e->x - (e->y + 1)) * e->zoom;
+	e->y1 = (e->x + (e->y + 1)) * (e->zoom / 2) - e->tab[e->y + 1][e->x] * e->alt;
+	dist_x = e->x1 - e->x0;
+	dist_y = e->y1 - e->y0;
+	max = abs(dist_x) > abs(dist_y) ? abs(dist_x) : abs(dist_y);
+	cursor = 0;
+	while (cursor < max)
+	{
+		draw_pixel_d(e, e->x_offset + e->x0 + (cursor * dist_x) / max,
+		e->y_offset + e->y0 + (cursor * dist_y) / max);
+		cursor++;
 	}
 }
 
 void		draw(t_env *e)
 {
-	int		x;
-	int		y;
-
-	y = -1;
-	while (++y < e->ymax)
+	e->y = 0;
+	while (e->y < e->ymax)
 	{
-		x = -1;
-		while (++x < e->xmax)
+		e->x = 0;
+		while (e->x < e->xmax)
 		{
-			e->x0 = x * e->zoom;
-			e->y0 = y * e->zoom;
-			if (x + 1 < e->xmax)
-				draw_line(e, (x + 1) * e->zoom, y * e->zoom);
-			if (y + 1 < e->ymax)
-		 		draw_line(e, x * e->zoom, (y + 1) * e->zoom);
+			if (e->x + 1 < e->xmax)
+				draw_line(e);
+			if (e->y + 1 < e->ymax)
+		 		draw_col(e);
+			e->x++;
 		}
+		e->y++;
 	}
 }
