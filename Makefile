@@ -16,7 +16,7 @@ SRCDIR = ./src/
 CC = gcc
 CFLAGS = -Wall -Werror -Wextra
 
-SRC_NAME = main.c draw.c parse.c key_event.c display.c
+SRC_NAME = main.c parse.c init.c draw.c color.c display.c
 OBJ_NAME = $(SRC_NAME:.c=.o)
 INC_NAME = -Ilibft/ -Iinclude
 SRC = $(addprefix $(SRCDIR), $(SRC_NAME))
@@ -24,8 +24,8 @@ OBJ = $(addprefix $(OBJDIR), $(OBJ_NAME))
 
 all: depend $(NAME)
 
-$(NAME): $(OBJ) gnl/libft/libft.a
-		$(CC) $(CFLAGS) -o $(NAME) $(OBJ) -Llibft -lft
+$(NAME): $(OBJ) libft/libft.a
+		$(CC) $(CFLAGS) -o $(NAME) $(OBJ) -Llibft -lft -lmlx -framework OpenGL -framework AppKit
 
 $(OBJDIR)%.o : $(SRCDIR)%.c
 		mkdir $(OBJDIR) 2> /dev/null || true
